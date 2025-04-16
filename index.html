@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      background: #ffffffcc;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 320px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      background-color: #2196f3;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1769aa;
+    }
+
+    .weatherBox {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .weatherBox img {
+      width: 60px;
+      vertical-align: middle;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>🌦 Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div id="weatherBox" class="weatherBox hidden">
+      <h2 id="cityName"></h2>
+      <img id="icon" />
+      <p id="condition"></p>
+      <p><span class="label">Temperature:</span> <span id="temp"></span>°C</p>
+      <p><span class="label">Humidity:</span> <span id="humidity"></span>%</p>
+      <p><span class="label">Wind:</span> <span id="wind"></span> kph</p>
+      <p><span class="label">AQI (PM2.5):</span> <span id="aqi"></span></p>
+    </div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      if (!city) return alert("Please enter a city name.");
+
+      const apiKey = "29026a92c0f24d03a60101615251604";
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.error) {
+          alert(data.error.message);
+          return;
+        }
+
+        document.getElementById('weatherBox').classList.remove('hidden');
+        document.getElementById('cityName').textContent = `${data.location.name}, ${data.location.country}`;
+        document.getElementById('icon').src = data.current.condition.icon;
+        document.getElementById('condition').textContent = data.current.condition.text;
+        document.getElementById('temp').textContent = data.current.temp_c;
+        document.getElementById('humidity').textContent = data.current.humidity;
+        document.getElementById('wind').textContent = data.current.wind_kph;
+        document.getElementById('aqi').textContent = data.current.air_quality.pm2_5.toFixed(2);
+      } catch (error) {
+        alert("Failed to fetch weather data.");
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
